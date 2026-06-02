@@ -1,0 +1,45 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: shorturl_mysql
+    restart: always
+    environment: 
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: short_url_system
+    ports: 
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - mynet
+    # mysql健康检查
+    healthcheck:
+      # 用mysqladmin ping检测服务是否可用，最准确
+      test: ["CMD","mysqladmin","ping","-h","localhost","-uroot","-p123456"]
+      interval: 3s
+      timeout: 2s
+      retries: 10
+      start_period: 10s
+
+  short_url:
+    image: short_url:1.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: short_url
+    restart: always
+    networks:
+      - mynet
+    ports:
+      - "9090:9090"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql-data:   
+
+networks:
+  mynet:  
+
