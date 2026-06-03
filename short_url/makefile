@@ -1,7 +1,7 @@
 .PHONY: build run down clean
 build: 
 	@echo "Building short_url docker images.."
-	docker build -t short_url:v1.0 .
+	docker build -t short_url:latest .
 
 run: build
 	@echo "Starting container service"
