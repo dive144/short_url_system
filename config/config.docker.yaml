@@ -1,0 +1,13 @@
+app:
+  name: short_url
+  port: :9090
+
+database:
+  Dsn: root:123456@tcp(mysql:3306)/short_url_system?charset=utf8mb4&parseTime=True&loc=Local
+
+
+
+
+
+#现在还需要配置redis缓存的地址
+#微服务之间需要相关调用的

@@ -1,0 +1,23 @@
+# IDE文件
+.idea/
+.vscode/
+
+# 本地编译的Windows可执行文件
+*.exe
+short_url.exe
+
+# 日志文件
+*.log
+logs/
+
+# Git文件
+.git
+.gitignore
+
+# 临时文件
+*.tmp
+*.swp
+
+# Docker相关文件（避免循环复制）
+build/
+docker-compose.yml

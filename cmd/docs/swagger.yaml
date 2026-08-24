@@ -1,0 +1,91 @@
+basePath: /
+definitions:
+  model.CreateShortUrlRequest:
+    properties:
+      custom_code:
+        maxLength: 8
+        minLength: 1
+        type: string
+      expire_at:
+        type: string
+      expire_time:
+        type: string
+      original_url:
+        type: string
+    type: object
+host: localhost:9090
+info:
+  contact: {}
+  description: 一个基于 Gin 的短链接生成与访问服务
+  title: 短链接服务 API
+  version: "1.0"
+paths:
+  /api/v1/shorten:
+    post:
+      consumes:
+      - application/json
+      description: 提交原始URL，生成对应的短链接
+      parameters:
+      - description: 创建短链接请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateShortUrlRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 短链接创建成功
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: 参数错误
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: 自定义短码已存在
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 创建短链接
+      tags:
+      - 短链接
+  /s/{shorturl}:
+    get:
+      description: 通过短码访问原始URL，自动302重定向
+      parameters:
+      - description: 短码
+        in: path
+        name: shorturl
+        required: true
+        type: string
+      responses:
+        "302":
+          description: 重定向到原始URL
+        "404":
+          description: 短链接不存在
+          schema:
+            additionalProperties: true
+            type: object
+        "410":
+          description: 短链接已过期
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 访问短链接
+      tags:
+      - 短链接
+swagger: "2.0"
