@@ -2,34 +2,38 @@ package config
 
 import (
 	"fmt"
-	"log"
-	"short_url/global"
-	"short_url/model"
+	"short_url/internal/shortlink"
 	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-func initDb() {
-	db, err := gorm.Open(mysql.Open(Conf.Database.Dsn), &gorm.Config{})
+func NewDb(cfg Config) (*gorm.DB, error) {
+	db, err := gorm.Open(mysql.Open(cfg.Database.Dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("Error connecting to database, %s", err)
+		return nil, err
 	}
-	global.Db = db
-	s, err := global.Db.DB()
+	s, err := db.DB()
 	if err != nil {
-		log.Fatalf("Error connecting to database, %s", err)
+		return nil, err
 	}
 	s.SetMaxIdleConns(10)
 	s.SetMaxOpenConns(100)
 	s.SetConnMaxLifetime(time.Hour)
 
-	//AutoMigrate是初始化操作，应该只在服务启动时执行一次
-	err = global.Db.AutoMigrate(&model.ShortUrl{})
+	fmt.Println(db) //打印出了mysql了，成功连上了
+	return db, nil
+}
 
+func AutoMigrate(db *gorm.DB) error {
+	return db.AutoMigrate(&shortlink.ShortUrl{})
+}
+
+func CloseDb(db *gorm.DB) error {
+	sqlDB, err := db.DB()
 	if err != nil {
-		panic(err)
+		return err
 	}
-	fmt.Println(global.Db) //打印出了mysql了，成功连上了
+	return sqlDB.Close()
 }

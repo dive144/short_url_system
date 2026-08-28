@@ -9,7 +9,7 @@ services:
     ports: 
       - "3306:3306"
     volumes:
-      - mysql-data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - mynet
@@ -21,6 +21,24 @@ services:
       timeout: 2s
       retries: 10
       start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    container_name: shorturl_redis
+    restart: always
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-123456}
+    ports:
+      - "6379:6379"
+    networks:
+      - mynet
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD-SHELL","redis-cli -a \"$${REDIS_PASSWORD}\" ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
 
   short_url:
     image: short_url:1.0
@@ -38,9 +56,12 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      redis:
+        condition: service_healthy
 
 volumes:
-  mysql-data:   
+  mysql_data:
+  redis_data:
 
 networks:
   mynet:  

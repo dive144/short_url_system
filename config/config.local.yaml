@@ -5,7 +5,11 @@ app:
 database:
   Dsn: root:123456@tcp(127.0.0.1:3306)/short_url_system?charset=utf8mb4&parseTime=True&loc=Local
 
-
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password: 123456
+  db: 0
 
 
 

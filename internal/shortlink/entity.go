@@ -1,4 +1,4 @@
-package models
+package shortlink
 
 import (
 	"time"
@@ -22,9 +22,20 @@ type ShortUrl struct {
 	DeletedAt  gorm.DeletedAt `gorm:"column:deleted_at;type:datetime;index" json:"-"`
 }
 
+// CreateShortUrlRequest 创建短链接的请求参数
 type CreateShortUrlRequest struct {
 	OriginalUrl string     `json:"original_url"`
 	CustomUrl   string     `json:"custom_code" binding:"omitempty,alphanum,min=1,max=8"`
-	ExpireIn    string     `json:"expire_time" binding:"omitempty"`
 	ExpireAt    *time.Time `json:"expire_at" binding:"omitempty"`
+}
+
+func NewShortUrl(
+	shortCode string,
+	r *CreateShortUrlRequest,
+) *ShortUrl {
+	return &ShortUrl{
+		ShortCode:   shortCode,
+		OriginalURL: r.OriginalUrl,
+		ExpireAt:    r.ExpireAt,
+	}
 }
